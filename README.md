@@ -5,9 +5,12 @@ Advanced events emitter.
 
 ## Features
 
+* Consistent API with Node's `EventEmitter` module
 * Trie event emitter with wildcards
 * Using range matches with wildcards
 * Asynchronous and synchronous events emitting
+* Adding multiple listeners to the same event
+* Listener countdown
 
 
 ## Install
@@ -60,6 +63,27 @@ events.on('user.update:101-*', newSaveCallback);
 
 // user.id = 1234
 events.emit('user.update:' + user.id, user);   // triggers newSaveCallback
+```
+
+### Once and other listener countdown
+
+```javascript
+var EventEmitter = require('beyo-events').EventEmitter;
+
+var events = new EventEmitter();
+
+// listen an "unlimited" amount of time
+events.on('foo', function () { });
+
+// listen once, then remove itself automatically
+events.once('foo', function () { });
+
+// .... same as
+events.on('foo', 1, function () { });
+
+// listen 10 times, then remove itself
+events.on('foo', 10, function () { });
+
 ```
 
 

@@ -104,6 +104,31 @@ describe('Test EventEmitter', function () {
     eventEmitter.emit('done');
   });
 
+  it('should add more than one listener to the same event', function (done) {
+    var eventEmitter = new events.EventEmitter();
+    var eventFlags = {};
+
+    this.timeout(200);
+
+    for (var i = 0; i < 10; ++i) +function(i) {
+      eventEmitter.on('foo', function () {
+        eventFlags[i] = true;
+      });
+    }(i);
+
+    eventEmitter.on('complete', function () {
+      for (var i = 0; i < 10; ++i) +function(i) {
+        eventFlags[i].should.be.true;
+      }
+
+      done();
+    });
+
+    eventEmitter.emit('foo');
+
+    eventEmitter.emit('complete');
+  });
+
   it('should add with valid range', function (done) {
     var eventEmitter = new events.EventEmitter();
     var eventCount = 0;
@@ -246,6 +271,84 @@ describe('Test EventEmitter', function () {
     eventEmitter.emit('test', [ 'event.foo', 'other.foo' ]);
     eventEmitter.emit('complete');
 
+  });
+
+  it('should consume events recursively (sync)', function () {
+    var eventEmitter = new events.EventEmitter();
+    var totalEvents = 0;
+
+    this.timeout(200);
+
+    eventEmitter.on('foo', 10, function () {
+      ++totalEvents;
+      eventEmitter.emitSync('foo');
+    });
+
+    eventEmitter.emitSync('foo');
+
+    totalEvents.should.equal(10);
+  });
+
+  it('should consume events recursively (async)', function (done) {
+    var eventEmitter = new events.EventEmitter();
+    var totalEvents = 0;
+
+    this.timeout(200);
+
+    eventEmitter.on('foo', 10, function () {
+      ++totalEvents;
+      eventEmitter.emit('foo');
+    });
+
+    eventEmitter.on('complete', function () {
+      totalEvents.should.be.equal(10);
+      done();
+    });
+
+    for (var i = 0; i < 10; i++) {
+      eventEmitter.emit('foo');
+    }
+
+    eventEmitter.emit('complete');
+  });
+
+  it('should consume events recursively (mixed)', function (done) {
+    var eventEmitter = new events.EventEmitter();
+    var totalEvents = 0;
+
+    this.timeout(200);
+
+    eventEmitter.on('foo', 10, function () {
+      ++totalEvents;
+      totalEvents % 1 ? eventEmitter.emit('foo') : eventEmitter.emitSync('foo');
+    });
+
+    eventEmitter.on('complete', function () {
+      totalEvents.should.be.equal(10);
+      done();
+    });
+
+    for (var i = 0; i < 10; i++) {
+      i % 1 ? eventEmitter.emit('foo') : eventEmitter.emitSync('foo');
+    }
+
+    eventEmitter.emit('complete');
+  });
+
+  it('should consume not consume on event get listeners', function (done) {
+    var eventEmitter = new events.EventEmitter();
+
+    this.timeout(200);
+
+    eventEmitter.on('foo', 1, function () {
+      done();
+    });
+
+    for (var i = 0; i < 10; i++) {
+      eventEmitter.listeners('foo').should.be.an.Array.and.have.lengthOf(1);
+    }
+
+    eventEmitter.emit('foo');
   });
 
 
