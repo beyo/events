@@ -142,13 +142,14 @@ describe('Test EventEmitter', function () {
 
       ++eventCount;
     });
-    eventEmitter.on('complete', function () {
+    eventEmitter.on('complete:*', function () {
       eventCount.should.equal(validRangeCount);
 
       done();
     });
 
     [
+      '*',
       '1', '1-10', '10-4', '18-20', '20',
       '1-2,4-10', '1,3,4,5', '10-11,13,15,17-19',
       '*-1', '*-10', '*-3,*-10,*-16'
@@ -167,7 +168,7 @@ describe('Test EventEmitter', function () {
 
     eventCount.should.equal(0);
 
-    eventEmitter.emit('complete');
+    eventEmitter.emit('complete:123');
   });
 
   it('should listen only once', function (done) {
@@ -252,12 +253,14 @@ describe('Test EventEmitter', function () {
       stack.should.be.eql(expected);
       stack = [];
     });
-    eventEmitter.on('complete', function () {
+    eventEmitter.on('complete.test', function () {
       done();
     });
 
     [
+      'event.*',
       'event.foo', 'event.bar', 'event.buz',
+      '*.foo',
       'other.foo', 'other.bar', 'other.buz'
     ].forEach(function (event) {
       eventEmitter.on(event, function () {
@@ -266,10 +269,10 @@ describe('Test EventEmitter', function () {
     });
 
     eventEmitter.emit('event.*');
-    eventEmitter.emit('test', [ 'event.foo', 'event.bar', 'event.buz' ]);
+    eventEmitter.emit('test', [ 'event.*', 'event.foo', 'event.bar', 'event.buz', '*.foo' ]);
     eventEmitter.emit('*.foo');
-    eventEmitter.emit('test', [ 'event.foo', 'other.foo' ]);
-    eventEmitter.emit('complete');
+    eventEmitter.emit('test', [ 'event.foo', 'event.*', '*.foo', 'other.foo' ]);
+    eventEmitter.emit('complete.*');
 
   });
 
