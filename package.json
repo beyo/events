@@ -1,6 +1,6 @@
 {
   "name": "beyo-events",
-  "version": "0.0.3",
+  "version": "0.0.9",
   "description": "Advanced event emitter",
   "author": "Yanick Rochon <yanick.rochon@gmail.com>",
   "keywords": [
@@ -21,13 +21,11 @@
     "url": "https://github.com/beyo/events/issues"
   },
   "dependencies": {
-    "error-factory": "0.0.7",
-    "semicov": "^0.1.1",
-    "should": "^3.3.1"
+    "error-factory": "0.0.9"
   },
   "devDependencies": {
-    "semicov": "^0.1.1-2",
-    "should": "^3.3.0",
+    "semicov": "^0.1.1",
+    "should": "^3.3.1",
     "mocha": "^1.18.2"
   },
   "license": "MIT"
