@@ -1,6 +1,6 @@
 {
   "name": "beyo-events",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Advanced event emitter",
   "author": "Yanick Rochon <yanick.rochon@gmail.com>",
   "keywords": [

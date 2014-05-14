@@ -354,5 +354,18 @@ describe('Test EventEmitter', function () {
     eventEmitter.emit('foo');
   });
 
+  it('should be valid events', function () {
+    var eventEmitter = new events.EventEmitter();
+
+    [
+      'foo.bar',
+      'foo-bar',
+      'foo.bar-buz',
+      'foo.bar.foo-bar.foo'
+    ].forEach(function (eventName) {
+      eventEmitter.on(eventName, function () {});
+      eventEmitter.emit(eventName, true);
+    });
+  });
 
 });
